@@ -1,84 +1,66 @@
 package com.fc.model;
 
 
+import java.util.Date;
+
 public class User {
 
-    private Integer uid;
+    public final static int STATUS_BLOCK = 0;
 
-    //系统属性
-    private String email;
-    private String password;
-    private Integer actived;
-    private String activateCode;
-    private String joinTime;
+    public final static int STATUS_NORMAL = 1;
 
-    //用户属性
+    private int id;
+    /**
+     * 会员ID
+     */
+    private String userId;
+    /**
+     * 用户名 默认为手机号
+     */
     private String username;
-    private String description;
-    private String headUrl;
-    private String position;
-    private String school;
-    private String job;
+    /**
+     * 密码
+     */
+    private String password;
+    /**
+     * 手机号
+     */
+    private String phoneNumber;
+    /**
+     * 应用注册id（由哪个应用注册的用户）
+     */
+    private String serviceId;
+    /**
+     * 加密设备SN号
+     */
+    private String sn;
 
-    //附加属性
-    private Integer postCount;
-    private Integer scanCount;
-    private Integer likeCount;
-    private Integer followCount;
-    private Integer followerCount;
+    /**
+     * 用户状态：0停用 1正常  默认正常
+     */
+    private int status = STATUS_NORMAL;
+    /**
+     * 注册时间
+     */
+    private Date registerTime;
 
-    public User() {}
 
-    public User(Integer uid) {
-        this.uid = uid;
+
+
+    public int getId() {
+        return id;
     }
 
-    public Integer getUid() {
-        return uid;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getActived() {
-        return actived;
-    }
-
-    public void setActived(Integer actived) {
-        this.actived = actived;
-    }
-
-    public String getActivateCode() {
-        return activateCode;
-    }
-
-    public void setActivateCode(String activateCode) {
-        this.activateCode = activateCode;
-    }
-
-    public String getJoinTime() {
-        return joinTime;
-    }
-
-    public void setJoinTime(String joinTime) {
-        this.joinTime = joinTime;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -89,106 +71,51 @@ public class User {
         this.username = username;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPassword() {
+        return password;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getHeadUrl() {
-        return headUrl;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setHeadUrl(String headUrl) {
-        this.headUrl = headUrl;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getPosition() {
-        return position;
+    public String getSn() {
+        return sn;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setSn(String sn) {
+        this.sn = sn;
     }
 
-    public String getSchool() {
-        return school;
+    public String getServiceId() {
+        return serviceId;
     }
 
-    public void setSchool(String school) {
-        this.school = school;
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
     }
 
-    public String getJob() {
-        return job;
+    public int getStatus() {
+        return status;
     }
 
-    public void setJob(String job) {
-        this.job = job;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public Integer getLikeCount() {
-        return likeCount;
+    public Date getRegisterTime() {
+        return registerTime;
     }
 
-    public void setLikeCount(Integer likeCount) {
-        this.likeCount = likeCount;
-    }
-
-    public Integer getPostCount() {
-        return postCount;
-    }
-
-    public void setPostCount(Integer postCount) {
-        this.postCount = postCount;
-    }
-
-    public Integer getScanCount() {
-        return scanCount;
-    }
-
-    public void setScanCount(Integer scanCount) {
-        this.scanCount = scanCount;
-    }
-
-    public Integer getFollowCount() {
-        return followCount;
-    }
-
-    public void setFollowCount(Integer followCount) {
-        this.followCount = followCount;
-    }
-
-    public Integer getFollowerCount() {
-        return followerCount;
-    }
-
-    public void setFollowerCount(Integer followerCount) {
-        this.followerCount = followerCount;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "uid=" + uid +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", actived=" + actived +
-                ", activateCode='" + activateCode + '\'' +
-                ", joinTime='" + joinTime + '\'' +
-                ", username='" + username + '\'' +
-                ", description='" + description + '\'' +
-                ", headUrl='" + headUrl + '\'' +
-                ", position='" + position + '\'' +
-                ", school='" + school + '\'' +
-                ", job='" + job + '\'' +
-                ", likeCount=" + likeCount +
-                ", postCount=" + postCount +
-                ", scanCount=" + scanCount +
-                ", followCount=" + followCount +
-                ", followerCount=" + followerCount +
-                '}';
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
     }
 }

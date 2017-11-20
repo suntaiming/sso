@@ -1,1 +1,1 @@
-<jsp:forward page="toIndex.do" />
+Welcome to sso!

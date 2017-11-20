@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fc.mapper.SubServiceMapper">
+
+
+
+
+    <insert id="insertSubService">
+        insert into c_sub_service(service_id,service_secret,logout_url,logout_all,register_time, modify_time)
+        values(#{serviceId},#{serviceSecret},#{logoutUrl},#{logoutAll},#{registerTime},#{modifyTime})
+    </insert>
+
+
+
+    <select id="selectByServiceId" resultType="com.fc.model.SubService">
+        select * from c_sub_service where service_id=#{serviceId}
+    </select>
+
+    <select id="selectAll" resultType="com.fc.model.SubService">
+        select *
+        from c_sub_service
+    </select>
+
+
+
+    <update id="updateLogoutAll">
+        update c_sub_service set logout_all=#{logoutAll},modify_time = #{modifyTime}
+        where service_id=#{serviceId}
+    </update>
+
+    <delete id="deleteByServiceId">
+
+        DELETE from c_sub_service where service_id = #{serviceId}
+    </delete>
+
+    <delete id="deleteAll">
+
+        DELETE from c_sub_service;
+    </delete>
+
+</mapper>
+
+

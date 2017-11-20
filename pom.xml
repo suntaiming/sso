@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.fc</groupId>
-  <artifactId>df</artifactId>
+  <groupId>com.xindun</groupId>
+  <artifactId>sso</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>df Maven Webapp</name>
@@ -74,10 +74,10 @@
       <version>4.2.5.RELEASE</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-      <version>4.2.5.RELEASE</version>
-    </dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>4.2.5.RELEASE</version>
+  </dependency>
 
     <!--MyBatis相关-->
     <dependency>
@@ -106,6 +106,12 @@
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>2.4.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+      <version>1.7.0.RELEASE</version>
     </dependency>
 
     <!--Servlet相关-->
@@ -158,6 +164,18 @@
     </dependency>
 
 
+
+
+    <!-- 字符串处理 -->
+    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.1</version>
+    </dependency>
+
+
+
     <!--七牛云文件上传-->
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -183,11 +201,21 @@
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+
   </dependencies>
+  <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+
+
 
 
   <build>
-    <finalName>df</finalName>
+    <finalName>ssm-sso</finalName>
     <plugins>
       <!--tomcat插件-->
       <plugin>

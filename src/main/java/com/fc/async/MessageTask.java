@@ -39,9 +39,9 @@ public class MessageTask implements Runnable {
         message.setUid(uid);
 
         //设置点赞人id和用户名
-        User user = userMapper.selectUsernameByUid(sessionUid);
-        message.setOtherId(user.getUid());
-        message.setOtherUsername(user.getUsername());
+//        User user = userMapper.selectUsernameByUid(sessionUid);
+
+//        message.setOtherUsername(user.getUsername());
         message.setPostId(pid);
 
         //设置操作和展示的内容

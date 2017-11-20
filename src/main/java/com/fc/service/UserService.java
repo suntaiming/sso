@@ -3,7 +3,10 @@ package com.fc.service;
 import com.fc.async.MailTask;
 import com.fc.mapper.UserMapper;
 import com.fc.model.Info;
+import com.fc.model.SubService;
 import com.fc.model.User;
+import com.fc.util.IdGenerator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,6 +15,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -29,122 +33,70 @@ public class UserService {
 
     @Autowired
     private JedisPool jedisPool;
+    @Autowired
+    ServiceTicketService serviceTicketService;
+    @Autowired
+    GrantingTicketService grantingTicketService;
 
-    public User getProfile(int sessionUid, int uid) {
-        //如果是浏览别人的主页，则增加主页浏览数
-        if(sessionUid!=uid){
-            userMapper.updateScanCount(uid);
+    @Autowired
+    SubServiceService subServiceService;
+
+    public void register(User user) throws Exception{
+        if(user == null){
+            throw new NullPointerException("UserService--register方法参数为空");
         }
-        //从数据库得到User对象
-        User user = userMapper.selectUserByUid(uid);
-        //设置获赞数，关注数，粉丝数
-        Jedis jedis = jedisPool.getResource();
-        user.setFollowCount((int)(long)jedis.scard(uid+":follow"));
-        user.setFollowerCount((int)(long)jedis.scard(uid+":fans"));
-        String likeCount = jedis.hget("vote",uid+"");
-        if(likeCount==null){
-            user.setLikeCount(0);
-        }else {
-            user.setLikeCount(Integer.valueOf(likeCount));
+        if(StringUtils.isBlank(user.getUserId())){
+            user.setUserId(IdGenerator.nextUuid());
         }
-
-        if(jedis!=null){
-            jedisPool.returnResource(jedis);
-        }
-        return user;
+        user.setRegisterTime(new Date());
+        userMapper.insertUser(user);
     }
 
-    public User getEditInfo(int uid) {
-        return userMapper.selectEditInfo(uid);
+    public User getByPhoneNumber(String phoneNumber){
+
+        return userMapper.selectUserByPhoneNumber(phoneNumber);
     }
 
-    public void updateUser(User user) {
-        userMapper.updateUser(user);
+
+
+    public void updatePassword(String username, String password){
+        userMapper.updatePassword(password, username);
     }
-
-    public void record(StringBuffer requestURL, String contextPath, String remoteAddr) {
-        Info info = new Info();
-        info.setRequestUrl(requestURL.toString());
-        info.setContextPath(contextPath);
-        info.setRemoteAddr(remoteAddr);
-        userMapper.insertInfo(info);
-    }
-
-    public List<User> listUserByTime() {
-        return userMapper.listUserByTime();
-    }
-
-    public List<User> listUserByHot() {
-        return userMapper.listUserByHot();
-    }
-
-    public void updateHeadUrl(int uid, String headUrl) {
-        userMapper.updateHeadUrl(uid,headUrl);
-    }
-
-    public void unfollow(int sessionUid, int uid) {
-        Jedis jedis = jedisPool.getResource();
-        Transaction tx = jedis.multi();
-        tx.srem(sessionUid+":follow", String.valueOf(uid));
-        tx.srem(uid+":fans", String.valueOf(sessionUid));
-        tx.exec();
-
-        if(jedis!=null){
-            jedisPool.returnResource(jedis);
-        }
-    }
-
-    public void follow(int sessionUid, int uid) {
-        Jedis jedis = jedisPool.getResource();
-        Transaction tx = jedis.multi();
-        tx.sadd(sessionUid+":follow", String.valueOf(uid));
-        tx.sadd(uid+":fans", String.valueOf(sessionUid));
-        tx.exec();
-        if(jedis!=null){
-            jedisPool.returnResource(jedis);
-        }
-    }
-
-    public boolean getFollowStatus(int sessionUid, int uid) {
-        Jedis jedis = jedisPool.getResource();
-        boolean following = jedis.sismember(sessionUid+":follow", String.valueOf(uid));
-        if(jedis!=null){
-            jedisPool.returnResource(jedis);
-        }
-        return following;
-    }
-
-    public String updatePassword(String password, String newpassword, String repassword, int sessionUid) {
-
-        String oldPassword = userMapper.selectPasswordByUid(sessionUid);
-        if(!oldPassword.equals(password)){
-            return "原密码输入错误~";
+    /**
+     * 退出登录
+     * @param userId
+     * @param fromServiceId
+     */
+    public void logout(String userId, String fromServiceId){
+        if(StringUtils.isBlank(userId)){
+            return ;
         }
 
-        if(newpassword.length()<6 ||newpassword.length()>20){
-            return "新密码长度要在6~20之间~";
+        SubService subService = null;
+        if(StringUtils.isNotBlank(fromServiceId)){
+            subService = subServiceService.getService(fromServiceId);
+            if(subService.getLogoutAll() == SubService.LOGOUTALL_NO){
+                return ;
+            }
         }
 
-        if(!newpassword.equals(repassword)){
-            return "新密码两次输入不一致~";
+        //销毁全局会话
+        String tgc = grantingTicketService.getTGC(userId);
+        grantingTicketService.removeTGT(tgc);
+        grantingTicketService.removeTGC(userId);
+        serviceTicketService.removeSTByUserId(userId);
+
+        List<SubService> subServices = subServiceService.findAll();
+        for(SubService service : subServices){
+            if(service.getServiceId().equals(fromServiceId)){
+                continue;
+            }
+            String logoutUrl = service.getLogoutUrl();
+            //todo 通知子服务登出
+            System.out.println("通知子服务登出....");
         }
 
-        userMapper.updatePassword(newpassword,sessionUid);
-        return "ok";
     }
 
-    //发送忘记密码确认邮件
-    public void forgetPassword(String email) {
-        String verifyCode = userMapper.selectVerifyCode(email);
-        System.out.println("verifyCode:"+verifyCode);
-        //发送邮件
-        taskExecutor.execute(new MailTask(verifyCode,email,javaMailSender,2));
-    }
-
-    public void verifyForgetPassword(String code) {
-        System.out.println("更新前："+code);
-        userMapper.updatePasswordByActivateCode(code);
-        System.out.println("更新后："+code);
-    }
 }
 
